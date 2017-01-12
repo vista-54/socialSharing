@@ -665,12 +665,6 @@ static NSString *const kShareOptionUrl = @"url";
     NSString *urlString = [command.arguments objectAtIndex:3];
     NSString *abid = [command.arguments objectAtIndex:4];
     
-    // only use the first image (for now.. maybe we can share in a loop?)
-    UIImage* image = nil;
-    for (NSString* filename in filenames) {
-        image = [self getImage:filename];
-        break;
-    }
   
   
         // append an url to a message, if both are passed
@@ -693,7 +687,7 @@ static NSString *const kShareOptionUrl = @"url";
         if (abid != (id)[NSNull null]) {
             abidString = [NSString stringWithFormat:@"abid=%@&", abid];
         }
-        NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"vk://post?%@message=%@", abidString, encodedShareString];
+        NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"https://api.vk.com/method/wall.post?message=%@", abidString, encodedShareString];
         
         NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
         [[UIApplication sharedApplication] openURL: whatsappURL];
