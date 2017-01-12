@@ -508,7 +508,9 @@ static NSString *const kShareOptionUrl = @"url";
 - (bool)canShareViaWhatsApp {
   return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"whatsapp://app"]]; // requires whitelisting on iOS9
 }
-
+- (bool)canShareViaVk {
+    return [[UIApplication sharedApplication] canOpenURL: [NSURL URLWithString:@"vk://app"]]; // requires whitelisting on iOS9
+}
 // this is only an internal test method for now, can be used to open a share sheet with 'Open in xx' links for tumblr, drive, dropbox, ..
 - (void)openImage:(NSString *)imageName {
   UIImage* image =[self getImage:imageName];
@@ -639,6 +641,64 @@ static NSString *const kShareOptionUrl = @"url";
   }
 }
 
+
+- (void)shareViaVk:(CDVInvokedUrlCommand*)command {
+    
+    // on iOS9 canShareVia('whatsapp'..) will only work if whatsapp:// is whitelisted.
+    // If it's not, this method will ask permission to the user on iOS9 for opening the app,
+    // which is of course better than WhatsApp sharing not working at all because you forgot to whitelist it.
+    // Tradeoff: on iOS9 this method will always return true, so make sure to whitelist it and call canShareVia('whatsapp'..)
+    if (!IsAtLeastiOSVersion(@"9.0")) {
+        if (![self canShareViaVk]) {
+            CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"not available"];
+            [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+            return;
+        }
+    }
+    
+    NSString *message   = [command.arguments objectAtIndex:0];
+    // subject is not supported by the SLComposeViewController
+    NSArray  *filenames = [command.arguments objectAtIndex:2];
+    NSString *urlString = [command.arguments objectAtIndex:3];
+    NSString *abid = [command.arguments objectAtIndex:4];
+    
+    // only use the first image (for now.. maybe we can share in a loop?)
+    UIImage* image = nil;
+    for (NSString* filename in filenames) {
+        image = [self getImage:filename];
+        break;
+    }
+  
+  
+        // append an url to a message, if both are passed
+        NSString * shareString = @"";
+        if (message != (id)[NSNull null]) {
+            shareString = message;
+        }
+        if (urlString != (id)[NSNull null]) {
+            if ([shareString isEqual: @""]) {
+                shareString = urlString;
+            } else {
+                shareString = [NSString stringWithFormat:@"%@ %@", shareString, [urlString URLEncodedString]];
+            }
+        }
+        NSString * encodedShareString = [shareString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+        // also encode the '=' character
+        encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"=" withString:@"%3D"];
+        encodedShareString = [encodedShareString stringByReplacingOccurrencesOfString:@"&" withString:@"%26"];
+        NSString * abidString = @"";
+        if (abid != (id)[NSNull null]) {
+            abidString = [NSString stringWithFormat:@"abid=%@&", abid];
+        }
+        NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"vk://send?%@text=%@", abidString, encodedShareString];
+        
+        NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
+        [[UIApplication sharedApplication] openURL: whatsappURL];
+        CDVPluginResult * pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+    
+}
+//
 - (void)saveToPhotoAlbum:(CDVInvokedUrlCommand*)command {
   self.command = command;
   NSArray *filenames = [command.arguments objectAtIndex:0];
