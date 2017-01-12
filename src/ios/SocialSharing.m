@@ -687,7 +687,7 @@ static NSString *const kShareOptionUrl = @"url";
         if (abid != (id)[NSNull null]) {
             abidString = [NSString stringWithFormat:@"abid=%@&", abid];
         }
-        NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"https://api.vk.com/method/wall.post?message=%@", abidString, encodedShareString];
+        NSString * encodedShareStringForWhatsApp = [NSString stringWithFormat:@"vk://wall.post?%@message=%@", abidString, encodedShareString];
         
         NSURL *whatsappURL = [NSURL URLWithString:encodedShareStringForWhatsApp];
         [[UIApplication sharedApplication] openURL: whatsappURL];
