@@ -227,7 +227,10 @@ static NSString *const kShareOptionUrl = @"url";
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else if ([@"email" caseInsensitiveCompare:via] == NSOrderedSame && [self isEmailAvailable]) {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
-  } else if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
+  }else if ([@"vk" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaVk]) {
+      pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+  }
+  else if ([@"whatsapp" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaWhatsApp]) {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
   } else if ([@"instagram" caseInsensitiveCompare:via] == NSOrderedSame && [self canShareViaInstagram]) {
     pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];

@@ -19,6 +19,7 @@
 - (void)shareViaFacebook:(CDVInvokedUrlCommand*)command;
 - (void)shareViaFacebookWithPasteMessageHint:(CDVInvokedUrlCommand*)command;
 - (void)shareViaWhatsApp:(CDVInvokedUrlCommand*)command;
+- (void)shareViaVk:(CDVInvokedUrlCommand*)command;
 - (void)shareViaSMS:(CDVInvokedUrlCommand*)command;
 - (void)shareViaEmail:(CDVInvokedUrlCommand*)command;
 - (void)shareViaInstagram:(CDVInvokedUrlCommand*)command;
